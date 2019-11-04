@@ -15,10 +15,18 @@ import com.facebook.react.modules.network.OkHttpClientProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -43,13 +51,49 @@ public class FastImageOkHttpProgressGlideModule extends LibraryGlideModule {
             @NonNull Glide glide,
             @NonNull Registry registry
     ) {
-        OkHttpClient client = OkHttpClientProvider
+        // Create a trust manager that does not validate certificate chains
+
+
+        OkHttpClient.Builder builder = OkHttpClientProvider
                 .getOkHttpClient()
                 .newBuilder()
                 .callTimeout(20, TimeUnit.SECONDS)
-                .addInterceptor(createInterceptor(progressListener))
-                .build();
-        OkHttpUrlLoader.Factory factory = new OkHttpUrlLoader.Factory(client);
+                .addInterceptor(createInterceptor(progressListener));
+        try {
+            final TrustManager[] trustAllCerts = new TrustManager[] {
+                    new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        }
+
+                        @Override
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        }
+
+                        @Override
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return new java.security.cert.X509Certificate[]{};
+                        }
+                    }
+            };
+
+            // Install the all-trusting trust manager
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            // Create an ssl socket factory with our all-trusting manager
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
+            builder.hostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+
+        }
+
+        OkHttpUrlLoader.Factory factory = new OkHttpUrlLoader.Factory(builder.build());
         registry.replace(GlideUrl.class, InputStream.class, factory);
     }
 
