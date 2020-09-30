@@ -9,6 +9,7 @@ import android.os.Build;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -94,7 +95,7 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
         RCTEventEmitter eventEmitter = context.getJSModule(RCTEventEmitter.class);
         int viewId = view.getId();
         eventEmitter.receiveEvent(viewId, REACT_ON_LOAD_START_EVENT, new WritableNativeMap());
-
+        boolean showLoaderImage = source.hasKey("showLoaderImage") && source.getBoolean("showLoaderImage");
         if (requestManager != null) {
             requestManager
                     // This will make this work for remote and local images. e.g.
@@ -105,7 +106,9 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
                     //    - data:image/png;base64
                     .load(imageSource.getSourceForLoad())
                     .apply(FastImageViewConverter.getOptions(context, imageSource, source))
+                    .placeholder(showLoaderImage ? R.drawable.placeholder_course: 0)
                     .listener(new FastImageRequestListener(key))
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(view);
         }
     }
