@@ -8,6 +8,7 @@ import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -124,7 +125,8 @@ class FastImageViewWithUrl extends ImageView {
 
             if(mSource.hasKey("fade")) {
                 int duration = mSource.getInt("fade");
-                builder.transition(DrawableTransitionOptions.withCrossFade(duration));
+                DrawableCrossFadeFactory.Builder transitionBuilder = new DrawableCrossFadeFactory.Builder(duration).setCrossFadeEnabled(true);
+                builder.transition(DrawableTransitionOptions.withCrossFade(transitionBuilder));
             }
 
             if (key != null)
