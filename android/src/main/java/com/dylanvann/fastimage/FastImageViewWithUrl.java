@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -120,6 +121,11 @@ class FastImageViewWithUrl extends ImageView {
                                     .getOptions(context, imageSource, mSource)
                                     .placeholder(mDefaultSource) // show until loaded
                                     .fallback(mDefaultSource)); // null will not be treated as error
+
+            if(mSource.hasKey("fade")) {
+                int duration = mSource.getInt("fade");
+                builder.transition(DrawableTransitionOptions.withCrossFade(duration));
+            }
 
             if (key != null)
                 builder.listener(new FastImageRequestListener(key));
