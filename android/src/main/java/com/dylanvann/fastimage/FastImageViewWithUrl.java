@@ -56,8 +56,7 @@ class FastImageViewWithUrl extends ImageView {
 
         if ((mSource == null ||
                 !mSource.hasKey("uri") ||
-                isNullOrEmpty(mSource.getString("uri"))) &&
-                mDefaultSource == null) {
+                isNullOrEmpty(mSource.getString("uri")))) {
 
             // Cancel existing requests.
             if (requestManager != null) {
