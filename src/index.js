@@ -9,6 +9,25 @@ import {
 
 const FastImageViewNativeModule = NativeModules.FastImageView
 
+const RESIZE_MODE = {
+    contain: 'contain',
+    cover: 'cover',
+    stretch: 'stretch',
+    center: 'center',
+}
+
+const PRIORITY = {
+    low: 'low',
+    normal: 'normal',
+    high: 'high',
+}
+
+const CACHE_CONTROL = {
+    immutable: 'immutable',
+    web: 'web',
+    cacheOnly: 'cacheOnly',
+}
+
 function FastImageBase({
     source,
     tintColor,
@@ -21,6 +40,7 @@ function FastImageBase({
     children,
     fallback,
     forwardedRef,
+    resizeMode = RESIZE_MODE.cover,
     ...props
 }) {
     const resolvedSource = Image.resolveAssetSource(source)
@@ -30,6 +50,7 @@ function FastImageBase({
             <View style={[styles.imageContainer, style]} ref={forwardedRef}>
                 <Image
                     {...props}
+                    resizeMode={resizeMode}
                     tintColor={tintColor}
                     style={StyleSheet.absoluteFill}
                     source={resolvedSource}
@@ -48,6 +69,7 @@ function FastImageBase({
         <View style={[styles.imageContainer, style]} ref={forwardedRef}>
             <FastImageView
                 {...props}
+                resizeMode={resizeMode}
                 tintColor={tintColor}
                 style={StyleSheet.absoluteFill}
                 source={resolvedSource}
@@ -76,37 +98,14 @@ const styles = StyleSheet.create({
     },
 })
 
-FastImage.resizeMode = {
-    contain: 'contain',
-    cover: 'cover',
-    stretch: 'stretch',
-    center: 'center',
-}
+FastImage.resizeMode = RESIZE_MODE
 
-FastImage.priority = {
-    // lower than usual.
-    low: 'low',
-    // normal, the default.
-    normal: 'normal',
-    // higher than usual.
-    high: 'high',
-}
+FastImage.priority = PRIORITY
 
-FastImage.cacheControl = {
-    // Ignore headers, use uri as cache key, fetch only if not in cache.
-    immutable: 'immutable',
-    // Respect http headers, no aggressive caching.
-    web: 'web',
-    // Only load from cache.
-    cacheOnly: 'cacheOnly',
-}
+FastImage.cacheControl = CACHE_CONTROL
 
 FastImage.preload = sources => {
     FastImageViewNativeModule.preload(sources)
-}
-
-FastImage.defaultProps = {
-    resizeMode: FastImage.resizeMode.cover,
 }
 
 const FastImageView = requireNativeComponent('FastImageView', FastImage, {

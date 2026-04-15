@@ -121,7 +121,7 @@
             if (self.onFastImageLoadStart) {
                 self.onFastImageLoadStart(@{});
                 self.hasSentOnLoadStart = YES;
-            } {
+            } else {
                 self.hasSentOnLoadStart = NO;
             }
             UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:_source.url]];
@@ -174,7 +174,7 @@
         if (self.onFastImageLoadStart) {
             self.onFastImageLoadStart(@{});
             self.hasSentOnLoadStart = YES;
-        } {
+        } else {
             self.hasSentOnLoadStart = NO;
         }
         self.hasCompleted = NO;

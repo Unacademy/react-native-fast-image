@@ -1,17 +1,13 @@
 import React from 'react'
 import Base from 'react-native-vector-icons/Ionicons'
 
-const Icon = ({ size, name, tintColor }) => (
+const Icon = ({ size = 26, name, tintColor, color }) => (
     <Base
         name={name}
         size={size}
         style={{ width: size, height: size }}
-        color={tintColor}
+        color={color ?? tintColor}
     />
 )
-
-Icon.defaultProps = {
-    size: 26,
-}
 
 export default Icon

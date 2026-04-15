@@ -1,35 +1,13 @@
 module.exports = {
-    parser: 'babel-eslint',
-    env: {
-        es6: true,
-    },
+    root: true,
+    extends: ['@react-native', 'prettier'],
     plugins: ['jest'],
     overrides: [
         {
-            files: 'src/**/*.test.js',
+            files: ['**/*.test.js'],
             env: {
-                'jest/globals': true,
+                jest: true,
             },
         },
     ],
-    extends: [
-        'eslint:recommended',
-        'plugin:prettier/recommended',
-        'plugin:react/recommended',
-    ],
-    parserOptions: {
-        ecmaFeatures: {
-            jsx: true,
-        },
-        ecmaVersion: 2018,
-        sourceType: 'module',
-    },
-    rules: {
-        'react/prop-types': 'off',
-    },
-    settings: {
-        react: {
-            version: 'detect',
-        },
-    },
 }

@@ -1,26 +1,75 @@
-buildscript {
-    repositories {
-        jcenter()
-        google()
+ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+if (project == rootProject) {
+    buildscript {
+        repositories {
+            google()
+            mavenCentral()
+        }
+        dependencies {
+            classpath("com.android.tools.build:gradle:8.10.2")
+        }
     }
-    dependencies {
-        classpath "com.android.tools.build:gradle:3.4.0"
+}
+
+def resolveReactNativeDir() {
+    def fromExt = safeExtGet("REACT_NATIVE_NODE_MODULES_DIR", null)
+    if (fromExt != null) {
+        return file(fromExt)
     }
+    def sibling = file("$projectDir/../../react-native")
+    if (sibling.exists()) {
+        return sibling
+    }
+    def hoisted = file("$projectDir/../node_modules/react-native")
+    if (hoisted.exists()) {
+        return hoisted
+    }
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            workingDir(rootProject.projectDir)
+            commandLine("node", "--print", "require.resolve('react-native/package.json')")
+            standardOutput = stdout
+        }
+        def pkg = stdout.toString().trim()
+        if (pkg.length() > 0) {
+            def fromNode = file(pkg).parentFile
+            if (fromNode.exists()) {
+                return fromNode
+            }
+        }
+    } catch (Exception ignored) {
+    }
+    throw new GradleException(
+            "${project.name}: Cannot resolve react-native. Install dependencies and ensure react-native is hoisted or set REACT_NATIVE_NODE_MODULES_DIR.")
 }
 
 apply plugin: "com.android.library"
 
-def safeExtGet(prop, fallback) {
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
-
-def _reactNativeVersion = safeExtGet("reactNative", "+")
-def _compileSdkVersion = safeExtGet("compileSdkVersion", 28)
-def _glideVersion = safeExtGet("glideVersion", "4.9.0")
+def reactNativeDir = resolveReactNativeDir()
 
 android {
-    compileSdkVersion _compileSdkVersion
-    buildToolsVersion safeExtGet("buildToolsVersion", "28.0.3")
+    namespace "com.dylanvann.fastimage"
+    compileSdkVersion safeExtGet("compileSdkVersion", 36)
+    buildToolsVersion safeExtGet("buildToolsVersion", "36.0.0")
+
+    defaultConfig {
+        minSdkVersion safeExtGet("minSdkVersion", 24)
+        targetSdkVersion safeExtGet("targetSdkVersion", 36)
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig false
+    }
 
     sourceSets {
         main {
@@ -33,34 +82,26 @@ android {
         }
     }
 
-    defaultConfig {
-        minSdkVersion safeExtGet("minSdkVersion", 16)
-        targetSdkVersion safeExtGet("targetSdkVersion", 28)
-        versionCode 1
-        versionName "1.0"
-    }
-    lintOptions {
+    lint {
         abortOnError false
     }
 }
 
 repositories {
-    mavenCentral()
+    maven { url "$reactNativeDir/android" }
     google()
-    maven {
-        url "https://maven.google.com"
-    }
+    mavenCentral()
 }
 
+def _glideVersion = safeExtGet("glideVersion", "4.16.0")
+
 dependencies {
-    //noinspection GradleDynamicVersion
-    implementation "com.facebook.react:react-native:${_reactNativeVersion}"
-    implementation "androidx.core:core:1.0.0"
-    implementation "androidx.appcompat:appcompat:1.0.0"
-    implementation "androidx.annotation:annotation:1.0.0"
-    implementation("com.github.bumptech.glide:glide:${_glideVersion}")
-    implementation("com.github.bumptech.glide:annotations:${_glideVersion}")
-    annotationProcessor 'com.android.support:support-annotations:28.0.0-alpha3'
+    implementation "com.facebook.react:react-android"
+    implementation "androidx.core:core:1.13.1"
+    implementation "androidx.appcompat:appcompat:1.7.0"
+    implementation "androidx.annotation:annotation:1.8.2"
+    implementation "com.github.bumptech.glide:glide:${_glideVersion}"
+    implementation "com.github.bumptech.glide:annotations:${_glideVersion}"
     annotationProcessor "com.github.bumptech.glide:compiler:${_glideVersion}"
-    implementation("com.github.bumptech.glide:okhttp3-integration:${_glideVersion}")
+    implementation "com.github.bumptech.glide:okhttp3-integration:${_glideVersion}"
 }

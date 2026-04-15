@@ -1,13 +1,14 @@
 import { StyleSheet } from 'react-native'
 import React from 'react'
-import renderer from 'react-test-renderer'
+import renderer, { act } from 'react-test-renderer'
 import FastImage from './index.js'
 
 const style = StyleSheet.create({ image: { width: 44, height: 44 } })
 
 test('FastImage renders correctly.', () => {
-    const tree = renderer
-        .create(
+    let instance
+    act(() => {
+        instance = renderer.create(
             <FastImage
                 source={{
                     uri: 'https://facebook.github.io/react/img/logo_og.png',
@@ -19,34 +20,42 @@ test('FastImage renders correctly.', () => {
                 style={style.image}
             />,
         )
-        .toJSON()
-
-    expect(tree).toMatchSnapshot()
+    })
+    expect(instance.toJSON()).toMatchSnapshot()
+    act(() => {
+        instance.unmount()
+    })
 })
 
 test('Renders a normal Image when not passed a uri.', () => {
-    const tree = renderer
-        .create(
+    let instance
+    act(() => {
+        instance = renderer.create(
             <FastImage
                 source={require('../ReactNativeFastImageExampleServer/pictures/jellyfish.gif')}
                 style={style.image}
             />,
         )
-        .toJSON()
-
-    expect(tree).toMatchSnapshot()
+    })
+    expect(instance.toJSON()).toMatchSnapshot()
+    act(() => {
+        instance.unmount()
+    })
 })
 
 test('Renders Image with fallback prop.', () => {
-    const tree = renderer
-        .create(
+    let instance
+    act(() => {
+        instance = renderer.create(
             <FastImage
                 source={require('../ReactNativeFastImageExampleServer/pictures/jellyfish.gif')}
                 style={style.image}
                 fallback
             />,
         )
-        .toJSON()
-
-    expect(tree).toMatchSnapshot()
+    })
+    expect(instance.toJSON()).toMatchSnapshot()
+    act(() => {
+        instance.unmount()
+    })
 })

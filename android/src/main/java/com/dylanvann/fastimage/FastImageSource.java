@@ -7,9 +7,10 @@ import android.text.TextUtils;
 
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.Headers;
+import com.facebook.react.modules.fresco.ImageCacheControl;
 import com.facebook.react.views.imagehelper.ImageSource;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class FastImageSource extends ImageSource {
     private static final String DATA_SCHEME = "data";
@@ -49,7 +50,7 @@ public class FastImageSource extends ImageSource {
     }
 
     public FastImageSource(Context context, String source, double width, double height, @Nullable Headers headers) {
-        super(context, source, width, height);
+        super(context, source, width, height, ImageCacheControl.DEFAULT);
         mHeaders = headers == null ? Headers.DEFAULT : headers;
         mUri = super.getUri();
 

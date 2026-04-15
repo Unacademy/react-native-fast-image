@@ -1,13 +1,12 @@
 import React, { Component } from 'react'
-import uuid from 'uuid/v4'
+import { v4 as uuidv4 } from 'uuid'
 
 export default BaseComponent => {
     class WithCacheBust extends Component {
         state = { bust: '?bust' }
 
         onPressReload = () => {
-            // Force complete re-render and bust image cache.
-            const key = uuid()
+            const key = uuidv4()
             const bust = `?bust=${key}`
             this.setState({ bust })
         }

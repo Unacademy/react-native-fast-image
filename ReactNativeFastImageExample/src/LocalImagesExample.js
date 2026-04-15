@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
+import { launchImageLibrary } from 'react-native-image-picker'
 import withCacheBust from './withCacheBust'
 import FastImage from 'react-native-fast-image'
 import Section from './Section'
@@ -9,17 +10,7 @@ import FieldsBase64 from './images/fields.js'
 import FieldsWebP from './images/fields.webp'
 import JellyfishGIF from './images/jellyfish.gif'
 import JellyfishWebP from './images/jellyfish.webp'
-import ImagePicker from 'react-native-image-picker'
 import BulletText from './BulletText'
-
-const options = {
-    title: 'Select Avatar',
-    customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
-    storageOptions: {
-        skipBackup: true,
-        path: 'images',
-    },
-}
 
 const Image = ({ source, ...p }) => (
     <FastImage style={styles.imageSquare} source={source} {...p} />
@@ -37,25 +28,20 @@ const Example = ({ name, source }) => (
 class PhotoExample extends Component {
     state = {}
 
-    pick = () => {
-        ImagePicker.showImagePicker(options, response => {
-            console.log('Response = ', response)
-            if (response.didCancel) {
-                console.log('User cancelled image picker')
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error)
-            } else if (response.customButton) {
-                console.log(
-                    'User tapped custom button: ',
-                    response.customButton,
-                )
-            } else {
-                const uri = response.uri
-                this.setState({
-                    image: { uri: uri },
-                })
-            }
+    pick = async () => {
+        const result = await launchImageLibrary({
+            mediaType: 'photo',
+            selectionLimit: 1,
         })
+        if (result.didCancel) {
+            return
+        }
+        const asset = result.assets?.[0]
+        if (asset?.uri) {
+            this.setState({
+                image: { uri: asset.uri },
+            })
+        }
     }
 
     render() {
@@ -113,13 +99,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         width: 100,
         flex: 0,
-    },
-    plus: {
-        width: 30,
-        height: 30,
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
     },
 })
 

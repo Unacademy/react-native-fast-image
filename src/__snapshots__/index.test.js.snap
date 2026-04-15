@@ -3,11 +3,11 @@
 exports[`FastImage renders correctly. 1`] = `
 <View
   style={
-    Array [
-      Object {
+    [
+      {
         "overflow": "hidden",
       },
-      Object {
+      {
         "height": 44,
         "width": 44,
       },
@@ -17,8 +17,8 @@ exports[`FastImage renders correctly. 1`] = `
   <FastImageView
     resizeMode="cover"
     source={
-      Object {
-        "headers": Object {
+      {
+        "headers": {
           "token": "someToken",
         },
         "priority": "high",
@@ -26,7 +26,7 @@ exports[`FastImage renders correctly. 1`] = `
       }
     }
     style={
-      Object {
+      {
         "bottom": 0,
         "left": 0,
         "position": "absolute",
@@ -41,11 +41,11 @@ exports[`FastImage renders correctly. 1`] = `
 exports[`Renders Image with fallback prop. 1`] = `
 <View
   style={
-    Array [
-      Object {
+    [
+      {
         "overflow": "hidden",
       },
-      Object {
+      {
         "height": 44,
         "width": 44,
       },
@@ -55,12 +55,12 @@ exports[`Renders Image with fallback prop. 1`] = `
   <Image
     resizeMode="cover"
     source={
-      Object {
+      {
         "testUri": "../../../ReactNativeFastImageExampleServer/pictures/jellyfish.gif",
       }
     }
     style={
-      Object {
+      {
         "bottom": 0,
         "left": 0,
         "position": "absolute",
@@ -75,11 +75,11 @@ exports[`Renders Image with fallback prop. 1`] = `
 exports[`Renders a normal Image when not passed a uri. 1`] = `
 <View
   style={
-    Array [
-      Object {
+    [
+      {
         "overflow": "hidden",
       },
-      Object {
+      {
         "height": 44,
         "width": 44,
       },
@@ -89,12 +89,12 @@ exports[`Renders a normal Image when not passed a uri. 1`] = `
   <FastImageView
     resizeMode="cover"
     source={
-      Object {
+      {
         "testUri": "../../../ReactNativeFastImageExampleServer/pictures/jellyfish.gif",
       }
     }
     style={
-      Object {
+      {
         "bottom": 0,
         "left": 0,
         "position": "absolute",

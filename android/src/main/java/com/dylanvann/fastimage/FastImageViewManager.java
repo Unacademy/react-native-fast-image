@@ -10,13 +10,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import static com.dylanvann.fastimage.FastImageRequestListener.REACT_ON_ERROR_EVENT;
 import static com.dylanvann.fastimage.FastImageRequestListener.REACT_ON_LOAD_END_EVENT;
@@ -90,11 +88,10 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
             VIEWS_FOR_URLS.put(key, newViewsForKeys);
         }
 
-        ThemedReactContext context = (ThemedReactContext) view.getContext();
-        RCTEventEmitter eventEmitter = context.getJSModule(RCTEventEmitter.class);
-        int viewId = view.getId();
-        eventEmitter.receiveEvent(viewId, REACT_ON_LOAD_START_EVENT, new WritableNativeMap());
+        int surfaceId = UIManagerHelper.getSurfaceId(view);
+        FastImageDispatch.send(view, FastImageViewEvent.loadStart(surfaceId, view.getId()));
 
+        ThemedReactContext themedContext = (ThemedReactContext) view.getContext();
         if (requestManager != null) {
             requestManager
                     // This will make this work for remote and local images. e.g.
@@ -104,7 +101,7 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
                     //    - android.resource://
                     //    - data:image/png;base64
                     .load(imageSource.getSourceForLoad())
-                    .apply(FastImageViewConverter.getOptions(context, imageSource, source))
+                    .apply(FastImageViewConverter.getOptions(themedContext, imageSource, source))
                     .listener(new FastImageRequestListener(key))
                     .into(view);
         }
@@ -161,13 +158,10 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
         List<FastImageViewWithUrl> viewsForKey = VIEWS_FOR_URLS.get(key);
         if (viewsForKey != null) {
             for (FastImageViewWithUrl view : viewsForKey) {
-                WritableMap event = new WritableNativeMap();
-                event.putInt("loaded", (int) bytesRead);
-                event.putInt("total", (int) expectedLength);
-                ThemedReactContext context = (ThemedReactContext) view.getContext();
-                RCTEventEmitter eventEmitter = context.getJSModule(RCTEventEmitter.class);
-                int viewId = view.getId();
-                eventEmitter.receiveEvent(viewId, REACT_ON_PROGRESS_EVENT, event);
+                int surfaceId = UIManagerHelper.getSurfaceId(view);
+                FastImageDispatch.send(
+                        view,
+                        FastImageViewEvent.progress(surfaceId, view.getId(), bytesRead, expectedLength));
             }
         }
     }

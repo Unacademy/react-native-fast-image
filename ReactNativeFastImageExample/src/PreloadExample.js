@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
+import { v4 as uuidv4 } from 'uuid'
 import SectionFlex from './SectionFlex'
 import FastImage from 'react-native-fast-image'
 import Section from './Section'
 import FeatureText from './FeatureText'
-import uuid from 'uuid/v4'
 import Button from './Button'
 import { createImageProgress } from 'react-native-image-progress'
 
@@ -20,9 +20,8 @@ class PreloadExample extends Component {
     }
 
     bustCache = () => {
-        const key = uuid()
+        const key = uuidv4()
         const bust = `?bust=${key}`
-        // Preload images. This can be called anywhere.
         const url = IMAGE_URL + bust
         this.setState({
             url,
