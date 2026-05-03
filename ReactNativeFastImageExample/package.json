@@ -22,7 +22,7 @@
     "react-native-vector-icons": "^6.6.0",
     "react-navigation": "^3.11.0",
     "react-timeout": "^1.1.2",
-    "uuid": "^3.3.2"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",
